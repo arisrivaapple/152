@@ -11,7 +11,7 @@ const layouts = require("express-ejs-layouts");
 
 const mongoose = require( 'mongoose' );
 //mongoose.connect( `mongodb+srv://${auth.atlasAuth.username}:${auth.atlasAuth.password}@cluster0-yjamu.mongodb.net/authdemo?retryWrites=true&w=majority`);
-mongoose.connect( 'mongodb://localhost/authDemo');
+mongoose.connect( 'mongodb+srv://zeitghostbuster:TZtn3nsCAKeK7BD@summercluster.zqtv7.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
 //const mongoDB_URI = process.env.MONGODB_URI
 //mongoose.connect(mongoDB_URI)
 
@@ -27,6 +27,7 @@ const authRouter = require('./routes/authentication');
 const isLoggedIn = authRouter.isLoggedIn
 const loggingRouter = require('./routes/logging');
 const indexRouter = require('./routes/index');
+const aboutRouter = require('./routes/about');
 const usersRouter = require('./routes/users');
 const toDoRouter = require('./routes/todo');
 const toDoAjaxRouter = require('./routes/todoAjax');
@@ -55,7 +56,7 @@ app.use(authRouter)
 app.use(loggingRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/about', aboutRouter);
 app.use('/todo',toDoRouter);
 app.use('/todoAjax',toDoAjaxRouter);
 
@@ -125,6 +126,19 @@ app.get('/profiles',
       }
     }
   )
+
+  app.get('/profiles',
+      isLoggedIn,
+      async (req,res,next) => {
+        try {
+          res.locals.profiles = await User.find({})
+          res.render('profiles')
+        }
+        catch(e){
+          next(e)
+        }
+      }
+    )
 
 app.use('/publicprofile/:userId',
     async (req,res,next) => {
